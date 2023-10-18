@@ -13,9 +13,9 @@ var init_wrangler_modules_watch = __esm({
   }
 });
 
-// C:/Users/administrator/AppData/Roaming/npm/node_modules/wrangler/templates/modules-watch-stub.js
+// C:/Users/WIN/AppData/Roaming/npm/node_modules/wrangler/templates/modules-watch-stub.js
 var init_modules_watch_stub = __esm({
-  "C:/Users/administrator/AppData/Roaming/npm/node_modules/wrangler/templates/modules-watch-stub.js"() {
+  "C:/Users/WIN/AppData/Roaming/npm/node_modules/wrangler/templates/modules-watch-stub.js"() {
     init_wrangler_modules_watch();
   }
 });
@@ -2923,14 +2923,18 @@ var src_default = {
     const subDir = "subscription";
     const pathSegments = url.pathname.split("/").filter((segment) => segment.length > 0);
     if (pathSegments[0] === subDir) {
-      const object = await SUB_BUCKET.get(pathSegments[pathSegments.length - 1]);
+      const key = pathSegments[pathSegments.length - 1];
+      const object = await SUB_BUCKET.get(key);
+      const object_headers = await SUB_BUCKET.get(key + "_headers");
       if (object === null)
         return new Response("Not Found", { status: 404 });
-      const headers = new Headers();
-      headers.set("Content-Type", "text/plain;charset=UTF-8");
-      if ("R2Bucket" === SUB_BUCKET.constructor.name)
+      if ("R2Bucket" === SUB_BUCKET.constructor.name) {
+        const headers = object_headers ? new Headers(await object_headers.json()) : new Headers({ "Content-Type": "text/plain;charset=UTF-8" });
         return new Response(object.body, { headers });
-      return new Response(object, { headers });
+      } else {
+        const headers = object_headers ? new Headers(JSON.parse(object_headers)) : new Headers({ "Content-Type": "text/plain;charset=UTF-8" });
+        return new Response(object, { headers });
+      }
     }
     const urlParam = url.searchParams.get("url");
     if (!urlParam)
@@ -2958,16 +2962,18 @@ var src_default = {
         return new Response("There are no valid links", { status: 400 });
       let response, parsedObj;
       for (const url2 of urlParts) {
+        const key = generateRandomStr(11);
         if (url2.startsWith("https://") || url2.startsWith("http://")) {
           response = await fetch(url2, request);
           if (!response.ok)
             continue;
           const plaintextData = await response.text();
           parsedObj = parseData(plaintextData);
+          await SUB_BUCKET.put(key + "_headers", JSON.stringify(Object.fromEntries(response.headers)));
+          keys.push(key);
         } else {
           parsedObj = parseData(url2);
         }
-        const key = generateRandomStr(11);
         if (/^(ssr?|vmess1?|trojan|vless|hysteria):\/\//.test(url2)) {
           const newLink = replaceInUri(url2, replacements, false);
           if (newLink)
