@@ -2964,7 +2964,11 @@ var src_default = {
       for (const url2 of urlParts) {
         const key = generateRandomStr(11);
         if (url2.startsWith("https://") || url2.startsWith("http://")) {
-          response = await fetch(url2, request);
+          response = await fetch(url2, {
+            method: request.method,
+            headers: request.headers,
+            redirect: 'follow', // https://developers.cloudflare.com/workers/runtime-apis/request#constructor
+          });
           if (!response.ok)
             continue;
           const plaintextData = await response.text();
