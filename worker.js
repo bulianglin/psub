@@ -222,8 +222,8 @@ var require_type = __commonJS({
     function compileStyleAliases(map) {
       var result = {};
       if (map !== null) {
-        Object.keys(map).forEach(function(style) {
-          map[style].forEach(function(alias) {
+        Object.keys(map).forEach(function (style) {
+          map[style].forEach(function (alias) {
             result[String(alias)] = style;
           });
         });
@@ -232,7 +232,7 @@ var require_type = __commonJS({
     }
     function Type(tag, options) {
       options = options || {};
-      Object.keys(options).forEach(function(name) {
+      Object.keys(options).forEach(function (name) {
         if (TYPE_CONSTRUCTOR_OPTIONS.indexOf(name) === -1) {
           throw new YAMLException('Unknown option "' + name + '" is met in definition of "' + tag + '" YAML type.');
         }
@@ -240,10 +240,10 @@ var require_type = __commonJS({
       this.options = options;
       this.tag = tag;
       this.kind = options["kind"] || null;
-      this.resolve = options["resolve"] || function() {
+      this.resolve = options["resolve"] || function () {
         return true;
       };
-      this.construct = options["construct"] || function(data) {
+      this.construct = options["construct"] || function (data) {
         return data;
       };
       this.instanceOf = options["instanceOf"] || null;
@@ -270,9 +270,9 @@ var require_schema = __commonJS({
     var Type = require_type();
     function compileList(schema, name) {
       var result = [];
-      schema[name].forEach(function(currentType) {
+      schema[name].forEach(function (currentType) {
         var newIndex = result.length;
-        result.forEach(function(previousType, previousIndex) {
+        result.forEach(function (previousType, previousIndex) {
           if (previousType.tag === currentType.tag && previousType.kind === currentType.kind && previousType.multi === currentType.multi) {
             newIndex = previousIndex;
           }
@@ -325,7 +325,7 @@ var require_schema = __commonJS({
       } else {
         throw new YAMLException("Schema.extend argument should be a Type, [ Type ], or a schema definition ({ implicit: [...], explicit: [...] })");
       }
-      implicit.forEach(function(type) {
+      implicit.forEach(function (type) {
         if (!(type instanceof Type)) {
           throw new YAMLException("Specified list of YAML types (or a single Type object) contains a non-Type object.");
         }
@@ -336,7 +336,7 @@ var require_schema = __commonJS({
           throw new YAMLException("There is a multi type in the implicit list of a schema. Multi tags can only be listed as explicit.");
         }
       });
-      explicit.forEach(function(type) {
+      explicit.forEach(function (type) {
         if (!(type instanceof Type)) {
           throw new YAMLException("Specified list of YAML types (or a single Type object) contains a non-Type object.");
         }
@@ -361,7 +361,7 @@ var require_str = __commonJS({
     var Type = require_type();
     module.exports = new Type("tag:yaml.org,2002:str", {
       kind: "scalar",
-      construct: function(data) {
+      construct: function (data) {
         return data !== null ? data : "";
       }
     });
@@ -376,7 +376,7 @@ var require_seq = __commonJS({
     var Type = require_type();
     module.exports = new Type("tag:yaml.org,2002:seq", {
       kind: "sequence",
-      construct: function(data) {
+      construct: function (data) {
         return data !== null ? data : [];
       }
     });
@@ -391,7 +391,7 @@ var require_map = __commonJS({
     var Type = require_type();
     module.exports = new Type("tag:yaml.org,2002:map", {
       kind: "mapping",
-      construct: function(data) {
+      construct: function (data) {
         return data !== null ? data : {};
       }
     });
@@ -438,19 +438,19 @@ var require_null = __commonJS({
       construct: constructYamlNull,
       predicate: isNull,
       represent: {
-        canonical: function() {
+        canonical: function () {
           return "~";
         },
-        lowercase: function() {
+        lowercase: function () {
           return "null";
         },
-        uppercase: function() {
+        uppercase: function () {
           return "NULL";
         },
-        camelcase: function() {
+        camelcase: function () {
           return "Null";
         },
-        empty: function() {
+        empty: function () {
           return "";
         }
       },
@@ -483,13 +483,13 @@ var require_bool = __commonJS({
       construct: constructYamlBoolean,
       predicate: isBoolean,
       represent: {
-        lowercase: function(object) {
+        lowercase: function (object) {
           return object ? "true" : "false";
         },
-        uppercase: function(object) {
+        uppercase: function (object) {
           return object ? "TRUE" : "FALSE";
         },
-        camelcase: function(object) {
+        camelcase: function (object) {
           return object ? "True" : "False";
         }
       },
@@ -613,17 +613,17 @@ var require_int = __commonJS({
       construct: constructYamlInteger,
       predicate: isInteger,
       represent: {
-        binary: function(obj) {
+        binary: function (obj) {
           return obj >= 0 ? "0b" + obj.toString(2) : "-0b" + obj.toString(2).slice(1);
         },
-        octal: function(obj) {
+        octal: function (obj) {
           return obj >= 0 ? "0o" + obj.toString(8) : "-0o" + obj.toString(8).slice(1);
         },
-        decimal: function(obj) {
+        decimal: function (obj) {
           return obj.toString(10);
         },
         /* eslint-disable max-len */
-        hexadecimal: function(obj) {
+        hexadecimal: function (obj) {
           return obj >= 0 ? "0x" + obj.toString(16).toUpperCase() : "-0x" + obj.toString(16).toUpperCase().slice(1);
         }
       },
@@ -653,8 +653,8 @@ var require_float = __commonJS({
       if (data === null)
         return false;
       if (!YAML_FLOAT_PATTERN.test(data) || // Quick hack to not allow integers end with `_`
-      // Probably should update regexp & check speed
-      data[data.length - 1] === "_") {
+        // Probably should update regexp & check speed
+        data[data.length - 1] === "_") {
         return false;
       }
       return true;
@@ -2458,7 +2458,7 @@ var require_dumper = __commonJS({
             hasLineBreak = true;
             if (shouldTrackWidth) {
               hasFoldableLine = hasFoldableLine || // Foldable line = too long, and not more-indented.
-              i - previousLineBreak - 1 > lineWidth && string[previousLineBreak + 1] !== " ";
+                i - previousLineBreak - 1 > lineWidth && string[previousLineBreak + 1] !== " ";
               previousLineBreak = i;
             }
           } else if (!isPrintable(char)) {
@@ -2484,7 +2484,7 @@ var require_dumper = __commonJS({
       return quotingType === QUOTING_TYPE_DOUBLE ? STYLE_DOUBLE : STYLE_SINGLE;
     }
     function writeScalar(state, string, level, iskey, inblock) {
-      state.dump = function() {
+      state.dump = function () {
         if (string.length === 0) {
           return state.quotingType === QUOTING_TYPE_DOUBLE ? '""' : "''";
         }
@@ -2536,7 +2536,7 @@ var require_dumper = __commonJS({
     }
     function foldString(string, width) {
       var lineRe = /(\n+)([^\n]*)/g;
-      var result = function() {
+      var result = function () {
         var nextLF = string.indexOf("\n");
         nextLF = nextLF !== -1 ? nextLF : string.length;
         lineRe.lastIndex = nextLF;
@@ -2876,7 +2876,7 @@ var require_js_yaml = __commonJS({
     var loader = require_loader();
     var dumper = require_dumper();
     function renamed(from, to) {
-      return function() {
+      return function () {
         throw new Error("Function yaml." + from + " is removed in js-yaml 4. Use yaml." + to + " instead, which is now safe by default.");
       };
     }
@@ -2918,11 +2918,25 @@ var src_default = {
   async fetch(request, env) {
     const url = new URL(request.url);
     const host = url.origin;
+    const frontendUrl = 'https://raw.githubusercontent.com/bulianglin/psub/main/frontend.html';
     const SUB_BUCKET = env.SUB_BUCKET;
     let backend = env.BACKEND.replace(/(https?:\/\/[^/]+).*$/, "$1");
     const subDir = "subscription";
     const pathSegments = url.pathname.split("/").filter((segment) => segment.length > 0);
-    if (pathSegments[0] === subDir) {
+    if (pathSegments.length === 0) {
+      const response = await fetch(frontendUrl);
+      if (response.status !== 200) {
+        return new Response('Failed to fetch frontend', { status: response.status });
+      }
+      const originalHtml = await response.text();
+      const modifiedHtml = originalHtml.replace(/https:\/\/bulianglin2023\.dev/, host);
+      return new Response(modifiedHtml, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html',
+        },
+      });
+    } else if (pathSegments[0] === subDir) {
       const key = pathSegments[pathSegments.length - 1];
       const object = await SUB_BUCKET.get(key);
       const object_headers = await SUB_BUCKET.get(key + "_headers");
@@ -2936,6 +2950,7 @@ var src_default = {
         return new Response(object, { headers });
       }
     }
+
     const urlParam = url.searchParams.get("url");
     if (!urlParam)
       return new Response("Missing URL parameter", { status: 400 });
@@ -3241,7 +3256,7 @@ function generateRandomStr(len) {
   return Math.random().toString(36).substring(2, len);
 }
 function generateRandomUUID() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     const r = Math.random() * 16 | 0;
     const v = c == "x" ? r : r & 3 | 8;
     return v.toString(16);
