@@ -18,6 +18,7 @@ KV或R2变量名：`SUB_BUCKET`
  - trojan
  - vless(取决于后端)
  - hysteria(取决于后端)
+ - hysteria2(取决于后端)
 
 ### 打赏
 请我喝矿泉水：[全专线中专机场AFF链接](http://b.880805.xyz/)

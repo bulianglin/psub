@@ -2993,7 +2993,7 @@ var src_default = {
         } else {
           parsedObj = parseData(url2);
         }
-        if (/^(ssr?|vmess1?|trojan|vless|hysteria):\/\//.test(url2)) {
+        if (/^(ssr?|vmess1?|trojan|vless|hysteria|hysteria2):\/\//.test(url2)) {
           const newLink = replaceInUri(url2, replacements, false);
           if (newLink)
             replacedURIs.push(newLink);
@@ -3067,6 +3067,8 @@ function replaceInUri(link, replacements, isRecovery) {
       return replaceTrojan(link, replacements, isRecovery);
     case link.startsWith("hysteria://"):
       return replaceHysteria(link, replacements);
+    case link.startsWith("hysteria2://"):
+      return replaceHysteria2(link, replacements, isRecovery);
     default:
       return;
   }
@@ -3220,6 +3222,23 @@ function replaceHysteria(link, replacements) {
   const randomDomain = generateRandomStr(12) + ".com";
   replacements[randomDomain] = server;
   return link.replace(server, randomDomain);
+}
+function replaceHysteria2(link, replacements) {
+    const randomUUID = generateRandomUUID();
+    const randomDomain = generateRandomStr(10) + ".com";
+    const regexMatch = link.match(/(hysteria2):\/\/(.*)@(.*?):/);
+    if (!regexMatch) {
+        return;
+    }
+    const [, , uuid, server] = regexMatch;
+    replacements[randomDomain] = server;
+    replacements[randomUUID] = uuid;
+    const regex = new RegExp(`${uuid}|${server}`, "g");
+    if (isRecovery) {
+        return link.replace(regex, (match) => cReplace(match, uuid, replacements[uuid], server, replacements[server]));
+    } else {
+        return link.replace(regex, (match) => cReplace(match, uuid, randomUUID, server, randomDomain));
+    }
 }
 function replaceYAML(yamlObj, replacements) {
   if (!yamlObj.proxies) {
